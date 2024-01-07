@@ -14,7 +14,7 @@ kartaca:
     name: kartaca
     gid: 2023
 
-  timezone: Istanbul
+  timezone: Europe/Istanbul
 
   required_packages:
     - htop
@@ -23,17 +23,7 @@ kartaca:
     - bind-utils
     - sysstat
     - mtr
-    - gnupg  # Ekstra paket: GPG'yi yükleyin
-
-  hashicorp_repo:
-    debian:
-      url: https://apt.releases.hashicorp.com
-      gpg_key: https://apt.releases.hashicorp.com/gpg
-      terraform_version: 1.6.4
-    centos:
-      url: https://rpm.releases.hashicorp.com/RHEL
-      gpg_key: https://rpm.releases.hashicorp.com/repodata/repomd.xml.key
-      terraform_version: 1.6.4
+    - gnupg
 
   hosts_entries:
     {% for ip in ip_list %}

@@ -33,47 +33,37 @@ grant_sudo_privileges:
     - require:
       - user: create_kartaca_user
 
-add_hashicorp_repo:
-  cmd.run:
-    - name: |
-        {% if "Ubuntu" == grains["os"] %}
-        wget -O /etc/apt/sources.list.d/hashicorp.list {{ kartaca.hashicorp_repo.debian.url }}/hashicorp.list
-        {% elif "CentOS Stream" == grains["os"] %}
-        wget -O /etc/yum.repos.d/hashicorp.repo {{ kartaca.hashicorp_repo.centos.url }}/hashicorp.repo
-        {% endif %}
-    - unless: |
-        {% if "Ubuntu" == grains["os"] %}
-        test -f /etc/apt/sources.list.d/hashicorp.list
-        {% elif "CentOS Stream" == grains["os"] %}
-        test -f /etc/yum.repos.d/hashicorp.repo
-        {% endif %}
-    - require_in:
-      - pkg: gnupg
-
 install_gpg_key:
   cmd.run:
     - name: |
         {% if "Ubuntu" == grains["os"] %}
-        wget -O- {{ kartaca.hashicorp_repo.debian.gpg_key }} | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        sudo apt update -y %% sudo apt install -y gpg
+        wget -0- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        apt update -y
         {% elif "CentOS Stream" == grains["os"] %}
-        rpmkeys --import {{ kartaca.hashicorp_repo.centos.gpg_key }}
+        yum -y install gpg
+        wget -0- https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo | sudo tee /etc/yum.repos.d/hashicorp.repo
+        yum list available | grep hashicorp
         {% endif %}
     - unless: |
         {% if "Ubuntu" == grains["os"] %}
         test -f /usr/share/keyrings/hashicorp-archive-keyring.gpg
         {% elif "CentOS Stream" == grains["os"] %}
-        test -f /etc/pki/rpm-gpg/RPM-GPG-KEY-hashicorp
+        test -f /etc/yum.repos.d/hashicorp.repo
         {% endif %}
-    - require_in:
-      - pkg: gnupg
+
 
 install_terraform:
   pkg.installed:
-    - name: terraform
-    - version: {{ kartaca.hashicorp_repo.debian.terraform_version }}
+    - names:
+        - terraform
+    - version: 1.6.4
     - require:
-      - cmd: add_hashicorp_repo
-      - cmd: install_gpg_key
+        - cmd: install_gpg_key
+
+
 
 configure_timezone:
   timezone.system_set:
