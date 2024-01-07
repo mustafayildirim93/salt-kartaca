@@ -29,11 +29,11 @@ kartaca:
     debian:
       url: https://apt.releases.hashicorp.com
       gpg_key: https://apt.releases.hashicorp.com/gpg
-      terraform_version: 1.0.0
+      terraform_version: 1.6.4
     centos:
       url: https://rpm.releases.hashicorp.com/RHEL
       gpg_key: https://rpm.releases.hashicorp.com/repodata/repomd.xml.key
-      terraform_version: 1.0.0
+      terraform_version: 1.6.4
 
   hosts_entries:
     {% for ip in ip_list %}
