@@ -73,11 +73,11 @@ enable_ip_forwarding:
   sysctl.present:
     - name: net.ipv4.ip_forward
     - value: 1
-    - config_file: /etc/sysctl.conf
+    - config: /etc/sysctl.conf
 
 install_required_packages:
   pkg.installed:
-    - pkgs: {{ kartaca.required_packages }}
+    - names: {{ kartaca.required_packages }}
 
 configure_hosts_entries:
   file.blockreplace:
