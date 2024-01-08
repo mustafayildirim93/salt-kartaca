@@ -66,7 +66,7 @@ install_terraform:
 
 
 configure_timezone:
-  timezone.system_set:
+  timezone.system:
     - name: {{ kartaca.timezone }}
 
 enable_ip_forwarding:
